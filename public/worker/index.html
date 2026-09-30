@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2a55">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Offloading">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Sazgar Offloading</title>
+<style>
+:root{--navy:#0b2a55;--blue:#0b4a9e;--bg:#eef2f7;--card:#fff;--line:#dbe2ec;--txt:#0f172a;--mut:#526075;--ok:#15803d;--okbg:#dcfce7;--warn:#a16207;--warnbg:#fef3c7;--bad:#dc2626;--badbg:#fee2e2;--tr:#7e22ce;--trbg:#f3e8ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overscroll-behavior:none;touch-action:manipulation}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+.installbar{background:#e6efff;color:#0b2a55;padding:9px 14px;font-size:13px;display:flex;align-items:center;gap:10px;line-height:1.4}
+.installbar button{border:0;border-radius:9px;padding:8px 12px;font-weight:700;background:var(--blue);color:#fff;white-space:nowrap}
+.installbar .x{background:none;color:#0b2a55;padding:4px 8px;font-size:16px}
+#offBar{background:#fee2e2;color:#7f1d1d;font-size:13px;padding:8px 14px;line-height:1.4}
+#login .installbar{border-radius:12px;margin-top:14px}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;padding-top:env(safe-area-inset-top)}
+button,input,select,textarea{font:inherit}
+.hide{display:none!important}
+
+/* login */
+#login{min-height:100%;display:flex;flex-direction:column;justify-content:center;padding:24px;background:linear-gradient(rgba(11,42,85,.82),rgba(11,42,85,.9)),url(hero.jpg) center/cover}
+#login .box{background:#fff;border-radius:16px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#login h1{margin:8px 0 2px;font-size:20px;color:var(--navy)}
+#login p{margin:0 0 16px;color:var(--mut);font-size:13px}
+.logo{width:62px;height:62px;border-radius:14px;display:block}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:12px 0 5px}
+input[type=text],input[type=password],input[type=date],input[type=search],textarea{width:100%;padding:13px 14px;border:1.5px solid #c5cfdc;border-radius:11px;background:#fff;color:var(--txt);outline:none}
+input:focus,textarea:focus{border-color:var(--blue)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:16px}
+.btn:active{background:#093b80}.btn[disabled]{opacity:.55}
+.btn.ghost{background:#fff;color:var(--blue);border:1.5px solid #b9c7da}
+.err{color:var(--bad);font-size:13px;margin-top:10px;min-height:18px}
+
+/* app shell */
+#app{display:flex;flex-direction:column;height:100%}
+header{background:var(--navy);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;background-image:linear-gradient(90deg,rgba(11,42,85,.96),rgba(11,42,85,.7)),url(hero.jpg);background-size:cover;background-position:center 40%}
+header .logo{width:38px;height:38px;border-radius:9px}
+header .t{flex:1;min-width:0}
+header .t b{display:block;font-size:14px;line-height:1.2}
+header .t small{opacity:.85;font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25)}
+.dot.off{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.25)}
+.iconbtn{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:9px;width:38px;height:38px;font-size:18px}
+#banner{background:var(--warnbg);color:#78350f;font-size:13px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+#banner button{background:#78350f;color:#fff;border:0;border-radius:8px;padding:6px 12px;font-weight:600}
+main{flex:1;overflow-y:auto;padding:12px 12px 20px;-webkit-overflow-scrolling:touch}
+nav{display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;min-width:0;border:0;background:none;padding:9px 2px 8px;color:var(--mut);font-size:10.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+nav button .ic{font-size:20px;line-height:1}
+nav button.on{color:var(--blue)}
+nav button.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:var(--blue)}
+nav .bd{position:absolute;top:3px;left:calc(50% + 6px);background:var(--bad);color:#fff;border-radius:10px;min-width:19px;height:19px;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+
+/* cards */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center}
+.stat b{display:block;font-size:22px;color:var(--navy)}.stat span{font-size:11px;color:var(--mut);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.card.tap:active{background:#f1f6fd}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cno{font-size:18px;font-weight:800;letter-spacing:.3px;color:var(--navy)}
+.sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.c-w{background:var(--warnbg);color:#92400e}.c-p{background:#dbeafe;color:#1d4ed8}
+.c-transit{background:var(--trbg);color:var(--tr)}.c-gate{background:var(--warnbg);color:#92400e}.c-off{background:var(--okbg);color:var(--ok)}.c-dmg{background:var(--badbg);color:var(--bad)}
+.bar{height:8px;border-radius:6px;background:#e2e8f0;overflow:hidden;display:flex;margin:10px 0 6px}
+.bar i{display:block;height:100%}
+.filters{display:flex;gap:6px;overflow-x:auto;margin:10px 0;padding-bottom:2px}
+.filters button{white-space:nowrap;border:1.5px solid #b9c7da;background:#fff;color:var(--blue);border-radius:999px;padding:7px 14px;font-weight:600;font-size:13px}
+.filters button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.empty{text-align:center;color:var(--mut);padding:36px 12px;font-size:14px}
+h2{margin:4px 2px 10px;font-size:16px;color:var(--navy)}
+.back{border:0;background:none;color:var(--blue);font-weight:700;padding:6px 2px;font-size:15px}
+a.call{color:var(--ok);font-weight:700;text-decoration:none}
+.mini{border:0;border-radius:9px;background:var(--blue);color:#fff;padding:10px 14px;font-weight:700;font-size:14px}
+.mini.green{background:#15803d}.mini.ghost{background:#fff;color:var(--blue);border:1.5px solid #b9c7da}.mini.red{background:#fff;color:var(--bad);border:1.5px solid #f3b4b4}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.acts .mini{flex:1;min-width:110px}
+.c-kar{background:#dbeafe;color:#1d4ed8}.c-up{background:#e2e8f0;color:#475569}.c-fac{background:var(--okbg);color:var(--ok)}
+
+/* form sheet */
+#sheetBg{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;display:flex;align-items:flex-end}
+#sheet{background:#fff;width:100%;max-height:92%;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}
+#sheet h3{margin:0 0 4px;font-size:17px;color:var(--navy)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.kv{background:#f4f7fb;border-radius:10px;padding:8px 10px}
+.kv small{display:block;font-size:10.5px;color:var(--mut);font-weight:700;text-transform:uppercase}
+.kv b{font-size:14px;word-break:break-all}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button{padding:14px;border-radius:12px;border:2px solid #c5cfdc;background:#fff;font-weight:800;font-size:16px;color:var(--mut)}
+.seg .ok.on{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.seg .dm.on{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+#toastW{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:80;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+#toastW div{background:var(--navy);color:#fff;border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+#toastW div.ok{background:#166534}#toastW div.bad{background:#991b1b}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login" class="hide">
+  <div class="box">
+    <img class="logo" src="icon-192.png" alt="">
+    <h1>Sazgar Engineering Works</h1>
+    <p>CKD Container Offloading</p>
+    <label for="lname">Aap ka naam</label>
+    <input id="lname" type="text" autocomplete="name" placeholder="Masalan: Ali Raza">
+    <label for="lpin">Worker PIN</label>
+    <input id="lpin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN">
+    <div class="err" id="lerr"></div>
+    <button class="btn" id="lgo">Login</button>
+    <div id="installLogin" class="installbar hide"></div>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="app" class="hide">
+  <header>
+    <img class="logo" src="icon-192.png" alt="">
+    <div class="t"><b>Container Offloading</b><small id="who"></small></div>
+    <span class="dot" id="dot" title="Live"></span>
+    <button class="iconbtn" id="refresh" aria-label="Refresh">&#x21bb;</button>
+    <button class="iconbtn" id="logout" aria-label="Logout">&#x23FB;</button>
+  </header>
+  <div id="installApp" class="installbar hide"></div>
+  <div id="offBar" class="hide"></div>
+  <div id="banner" class="hide"><span id="bannerTxt"></span><button id="bannerBtn">Sync</button></div>
+  <main id="main"></main>
+  <nav>
+    <button data-tab="all" class="on"><span class="ic">&#x1F4E6;</span>Containers</button>
+    <button data-tab="parts"><span class="ic">&#x1F527;</span>Parts Ramp<span class="bd hide" id="bdParts">0</span></button>
+    <button data-tab="welding"><span class="ic">&#x1F525;</span>Welding Ramp<span class="bd hide" id="bdWeld">0</span></button>
+    <button data-tab="transit"><span class="ic">&#x1F6A2;</span>Transit</button>
+    <button data-tab="done"><span class="ic">&#x2705;</span>Done</button>
+  </nav>
+</div>
+
+<div id="sheetBg" class="hide"><div id="sheet"></div></div>
+<div id="toastW"></div>
+
+<script>
+(function () {
+  const $ = s => document.querySelector(s);
+  const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }, del: k => { try { localStorage.removeItem(k); } catch (e) {} } };
+  let S = { name: LS.get('w_name') || '', pin: LS.get('w_pin') || '' };
+  let data = { rev: 0, batches: [] };
+  let tab = 'all', openBatch = null, filter = 'all', q = '', es = null, online = false;
+  let queue = []; try { queue = JSON.parse(LS.get('w_queue2') || '[]'); } catch (e) {}
+  const saveQ = () => LS.set('w_queue2', JSON.stringify(queue));
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const p2 = n => String(n).padStart(2, '0');
+
+  async function api(method, url, body) {
+    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'X-Worker-Pin': S.pin }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(j.error || r.statusText), { status: r.status });
+    return j;
+  }
+  function toast(msg, kind) { const d = document.createElement('div'); d.textContent = msg; if (kind) d.className = kind; $('#toastW').appendChild(d); setTimeout(() => d.remove(), 4200); }
+  let lastOk = Date.now();
+  function setOnline(v) { online = v; if (v) lastOk = Date.now(); $('#dot').classList.toggle('off', !v); if (v) flushQueue(); checkOffBar(); }
+  function checkOffBar() {
+    const bar = $('#offBar'); if (!bar) return;
+    const long = !online && Date.now() - lastOk > 90000;
+    bar.classList.toggle('hide', !long);
+    if (long) bar.textContent = 'Server se rabta nahi ho raha. Internet check karein. Agar office ne link badla hai to naya link/QR office se lekar app dobara kholein. Aap ka kiya hua kaam phone mein save hai.';
+  }
+  setInterval(checkOffBar, 15000);
+
+  // ---------- install as app ----------
+  let deferredPrompt = null;
+  const standalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const secureCtx = window.isSecureContext;
+  function installHTML() {
+    if (standalone() || LS.get('w_noinstall') === '1') return '';
+    if (deferredPrompt) return '<span style="flex:1">&#128242; Is ko app bana kar phone mein rakh lein</span><button id="doInstall">Install App</button><button class="x" data-noinst="1">&#10005;</button>';
+    if (isIOS) return '<span style="flex:1">&#128242; iPhone: Safari mein neeche <b>Share</b> (&#11014;) dabayen &rarr; <b>Add to Home Screen</b></span><button class="x" data-noinst="1">&#10005;</button>';
+    if (!secureCtx) return '<span style="flex:1">&#9888; Yeh link secure (https) nahi, isliye app install nahi ho sakti. Office se <b>https</b> wala internet link lein.</span><button class="x" data-noinst="1">&#10005;</button>';
+    return '<span style="flex:1">&#128242; Chrome menu <b>(&#8942;)</b> &rarr; <b>Install app</b> ya <b>Add to Home screen</b></span><button class="x" data-noinst="1">&#10005;</button>';
+  }
+  function showInstall() { const h = installHTML(); ['#installApp', '#installLogin'].forEach(s => { const e = $(s); if (e) { e.innerHTML = h; e.classList.toggle('hide', !h); } }); }
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; showInstall(); });
+  window.addEventListener('appinstalled', () => { deferredPrompt = null; LS.set('w_noinstall', '1'); showInstall(); toast('App install ho gayi! Home screen se kholein.', 'ok'); });
+  document.addEventListener('click', async e => {
+    if (e.target.closest('#doInstall') && deferredPrompt) { deferredPrompt.prompt(); try { await deferredPrompt.userChoice; } catch (x) {} deferredPrompt = null; showInstall(); }
+    if (e.target.closest('[data-noinst]')) { LS.set('w_noinstall', '1'); showInstall(); }
+  });
+
+  // ---------- login ----------
+  function showLogin(msg) { setTimeout(showInstall, 0); $('#app').classList.add('hide'); $('#login').classList.remove('hide'); $('#lname').value = S.name; $('#lerr').textContent = msg || ''; if (es) { es.close(); es = null; } }
+  $('#lgo').onclick = async () => {
+    const name = $('#lname').value.trim(), pin = $('#lpin').value.trim();
+    if (!name) { $('#lerr').textContent = 'Apna naam likhein'; return; }
+    $('#lgo').disabled = true; $('#lerr').textContent = '';
+    try { S = { name, pin }; await api('POST', '/api/worker/login', { pin }); LS.set('w_name', name); LS.set('w_pin', pin); start(); }
+    catch (e) { $('#lerr').textContent = e.status === 401 ? 'PIN galat hai' : e.status === 429 ? e.message : 'Server se rabta nahi ho raha. Internet check karein.'; }
+    $('#lgo').disabled = false;
+  };
+  $('#logout').onclick = () => { if (confirm('Logout karein?')) { LS.del('w_pin'); S.pin = ''; showLogin(); } };
+
+  // ---------- data + realtime ----------
+  let dirty = false, lastLoad = 0, sseOK = false;
+  const busy = () => { const a = document.activeElement; return (a && /^(INPUT|TEXTAREA)$/.test(a.tagName) && !$('#login').offsetParent) || !$('#sheetBg').classList.contains('hide'); };
+  function softRender() { if (busy()) { dirty = true; return; } dirty = false; render(); }
+  document.addEventListener('focusout', () => setTimeout(() => { if (dirty && !busy()) softRender(); }, 150));
+  async function load() {
+    lastLoad = Date.now();
+    try { data = await api('GET', '/api/worker/state'); setOnline(true); replayQueueLocally(); softRender(); }
+    catch (e) { if (e.status === 401) { showLogin('PIN badal gaya hai, dobara login karein'); return; } setOnline(false); render(); }
+  }
+  let reloadT = null; const loadSoon = () => { clearTimeout(reloadT); reloadT = setTimeout(load, 500); };
+  function connect() {
+    if (es) es.close();
+    es = new EventSource('/api/events?role=worker&pin=' + encodeURIComponent(S.pin) + '&name=' + encodeURIComponent(S.name));
+    sseOK = false;
+    const sseTimer = setTimeout(() => { if (!sseOK) { try { es.close(); } catch (x) {} } }, 12000);   // proxy blocks live stream -> fall back to polling
+    es.onopen = () => { setOnline(true); load(); };
+    es.onerror = () => { if (!sseOK) return; setOnline(false); };
+    es.onmessage = m => {
+      sseOK = true; clearTimeout(sseTimer);
+      const ev = JSON.parse(m.data);
+      if (ev.type === 'offload' || ev.type === 'gate') {
+        const c = findC(ev.batch, ev.containerNo);
+        if (c) {
+          if (ev.type === 'offload') applyOff(c, ev.record);
+          else if (c.st !== 'off') { if (ev.marked) { c.st = 'gate'; if (ev.ts) { c.gateDate = ev.ts.date; c.gateTime = ev.ts.time; } } else if (c.st === 'gate') c.st = revertSt(ev.batch); }
+          render();
+        }
+        const by = ev.type === 'offload' ? ev.record.offloadedBy : ev.by;
+        if (by && by !== S.name) toast(ev.containerNo + (ev.type === 'offload' ? ' offload hua' : ev.marked ? ' gate mark hua' : ' gate se hataya') + ' (' + by + ')');
+      } else if (ev.type === 'state') loadSoon();
+    };
+  }
+  const findB = b => data.batches.find(x => x.batch === b);
+  const findC = (b, c) => { const B = findB(b); return B && B.containers.find(x => x.containerNo === c); };
+  const revertSt = b => { const B = findB(b); return B && B.transit ? 'transit' : 'karachi'; };
+  const applyOff = (c, r) => { c.st = 'off'; c.off = { date: r.offloadingDate, time: r.offloadingTime, condition: r.condition, remarks: r.remarks, by: r.offloadedBy || '' }; };
+
+  // ---------- offline queue (gate marks + offloads) ----------
+  function replayQueueLocally() {          // after a refresh, keep showing my unsynced actions
+    queue.forEach(it => { const c = findC(it.payload.batch, it.payload.containerNo); if (!c || c.st === 'off') return;
+      if (it.kind === 'gate') { c.st = it.payload.marked ? 'gate' : revertSt(it.payload.batch); }
+      else c.st = 'off', c.off = { date: (it.payload.offloadingDate || '').split('-').reverse().join('-'), time: it.payload.offloadingTime, condition: it.payload.condition, remarks: it.payload.remarks || '-', by: S.name }; });
+  }
+  function updBanner() { $('#banner').classList.toggle('hide', queue.length === 0); $('#bannerTxt').textContent = queue.length + ' kaam sync hona baqi hai' + (online ? '' : ' (internet nahi)'); }
+  let flushing = false;
+  async function flushQueue() {
+    if (flushing || !queue.length) { updBanner(); return; }
+    flushing = true;
+    while (queue.length) {
+      const it = queue[0];
+      try { const r = await api('POST', it.kind === 'gate' ? '/api/worker/gate' : '/api/worker/offload', it.payload); queue.shift(); saveQ(); if (it.kind === 'offload' && r.record) { const c = findC(it.payload.batch, it.payload.containerNo); if (c) applyOff(c, r.record); } }
+      catch (e) { if (e.status && e.status !== 401 && e.status !== 429) { queue.shift(); saveQ(); toast(it.payload.containerNo + ': ' + e.message, 'bad'); load(); } else break; }
+    }
+    flushing = false; updBanner(); render();
+  }
+  $('#bannerBtn').onclick = flushQueue;
+  window.addEventListener('online', load);
+
+  async function send(kind, payload, okMsg) {
+    try { const r = await api('POST', kind === 'gate' ? '/api/worker/gate' : '/api/worker/offload', payload); return r; }
+    catch (e) {
+      if (e.status && e.status !== 401 && e.status !== 429) { toast(e.message, 'bad'); load(); return null; }
+      queue.push({ kind, payload }); saveQ(); toast('Internet nahi - mobile mein save hai, connect hote hi sync hoga', 'ok'); return { queued: true };
+    }
+  }
+  async function gateMark(batch, cno, marked) {
+    const c = findC(batch, cno); if (!c || c.st === 'off') return;
+    const n = new Date(), date = `${p2(n.getDate())}-${p2(n.getMonth() + 1)}-${n.getFullYear()}`, time = n.toLocaleTimeString();
+    const prev = c.st, pd = c.gateDate, pt = c.gateTime;
+    if (marked) { c.st = 'gate'; c.gateDate = date; c.gateTime = time; } else c.st = revertSt(batch);
+    render();
+    const r = await send('gate', { batch, containerNo: cno, marked, date, time, worker: S.name });
+    if (!r) { c.st = prev; c.gateDate = pd; c.gateTime = pt; render(); return; }
+    toast(cno + (marked ? ' gate mark ho gaya' : ' gate se hata diya'), 'ok'); closeSheet();
+  }
+
+  // ---------- helpers ----------
+  const pending = cno => queue.some(i => i.payload.containerNo === cno);
+  const ALL = () => data.batches.flatMap(b => b.containers.map(c => Object.assign({ batch: b.batch, model: b.model, bl: b.bl, lc: b.lc }, c)));
+  const ST = { off: ['c-off', 'Offloaded'], gate: ['c-fac', 'In Factory'], transit: ['c-transit', 'Transit LHR'], karachi: ['c-kar', 'In Karachi'], upcoming: ['c-up', 'Upcoming'] };
+  const stChip = c => { const [k, l] = ST[c.st] || ST.upcoming; const dmg = c.st === 'off' && c.off && c.off.condition === 'Damage'; return `<span class="chip ${dmg ? 'c-dmg' : k}">${dmg ? 'Offloaded - Damage' : l}</span>` + (pending(c.containerNo) ? ' <span class="chip c-gate">sync baqi</span>' : ''); };
+  const typeChip = t => `<span class="chip ${t === 'Welding' ? 'c-w' : 'c-p'}">${esc(t)}</span>`;
+  const match = c => !q || (c.containerNo + ' ' + c.batch + ' ' + (c.vehicleNo || '') + ' ' + (c.sealNo || '') + ' ' + (c.model || '')).toLowerCase().includes(q);
+  const searchBox = ph => `<input id="qbox" type="search" placeholder="${ph}" value="${esc(q)}" style="margin-bottom:10px">`;
+  const phone = c => c.mobileNo && c.mobileNo !== 'N/A' ? `<a class="call" href="tel:${esc(c.mobileNo)}" onclick="event.stopPropagation()">${esc(c.mobileNo)}</a>` : '';
+
+  function actions(c) {
+    if (c.st === 'off') return '';
+    const k = `data-b="${esc(c.batch)}" data-c="${esc(c.containerNo)}"`;
+    return `<div class="acts">${c.st === 'gate' ? `<button class="mini green" data-act="offload" ${k}>Offload karein</button><button class="mini red" data-act="unmark" ${k}>Gate se hatayen</button>` : `<button class="mini" data-act="mark" ${k}>Gate Mark</button><button class="mini ghost" data-act="offload" ${k}>Offload</button>`}</div>`;
+  }
+  function card(c, showActs) {
+    return `<div class="card tap" data-info="${esc(c.batch)}|${esc(c.containerNo)}"><div class="row"><span class="cno" style="font-size:17px">${esc(c.containerNo)}</span>${typeChip(c.type)}</div>
+      <div style="margin-top:5px">${stChip(c)}</div>
+      <div class="sub">Batch <b>${esc(c.batch)}</b> &middot; ${esc(c.model)} &middot; Seq ${esc(c.seq)} &middot; Seal ${esc(c.sealNo)}</div>
+      ${c.vehicleNo && c.vehicleNo !== 'N/A' ? `<div class="sub">Gaari: <b>${esc(c.vehicleNo)}</b> ${phone(c) ? '&middot; ' + phone(c) : ''}${c.location && c.location !== 'N/A' ? ' &middot; ' + esc(c.location) : ''}</div>` : ''}
+      ${c.st === 'gate' ? `<div class="sub">Gate par: ${esc(c.gateDate)} ${esc(c.gateTime)}</div>` : ''}
+      ${c.st === 'off' && c.off ? `<div class="sub">Offload: ${esc(c.off.date)} ${esc(c.off.time)}${c.off.by ? ' &middot; ' + esc(c.off.by) : ''}</div>` : ''}
+      ${showActs ? actions(c) : ''}</div>`;
+  }
+
+  // ---------- views ----------
+  function render() {
+    $('#who').textContent = S.name;
+    const all = ALL(), gp = all.filter(c => c.st === 'gate' && c.type === 'Parts').length, gw = all.filter(c => c.st === 'gate' && c.type === 'Welding').length;
+    $('#bdParts').textContent = gp; $('#bdParts').classList.toggle('hide', !gp); $('#bdWeld').textContent = gw; $('#bdWeld').classList.toggle('hide', !gw);
+    updBanner();
+    document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+    const m = $('#main'), keep = m.scrollTop;
+    m.innerHTML = tab === 'all' ? vAll(all) : tab === 'parts' ? vRamp(all, 'Parts') : tab === 'welding' ? vRamp(all, 'Welding') : tab === 'transit' ? vTransit(all) : vDone(all);
+    m.scrollTop = keep;
+    const s = $('#qbox'); if (s) s.oninput = e => { q = e.target.value.trim().toLowerCase(); const pos = e.target.selectionStart; render(); const n = $('#qbox'); n.focus(); n.setSelectionRange(pos, pos); };
+    if (sheetC) { const c = findC(sheetC.b, sheetC.c); if (c && $('#sheet [data-dna]')) openInfo(sheetC.b, sheetC.c, true); }
+  }
+
+  function vAll(all) {
+    const cnt = k => all.filter(c => k === 'all' || c.st === k).length;
+    let list = all.filter(match); if (filter !== 'all') list = list.filter(c => c.st === filter);
+    const F = [['all', 'Sab'], ['transit', 'Transit LHR'], ['gate', 'In Factory'], ['off', 'Offloaded'], ['karachi', 'In Karachi'], ['upcoming', 'Upcoming']];
+    return searchBox('Container / Batch / Gaari search') + `<div class="filters">${F.map(([k, l]) => `<button data-f="${k}" class="${filter === k ? 'on' : ''}">${l} (${cnt(k)})</button>`).join('')}</div>` +
+      (list.length ? list.slice(0, 120).map(c => card(c, true)).join('') + (list.length > 120 ? `<div class="empty">Pehle 120 dikh rahe hain (${list.length} mein se). Search se filter karein.</div>` : '') : '<div class="empty">Koi container nahi mila.</div>');
+  }
+  function vRamp(all, type) {
+    const gate = all.filter(c => c.st === 'gate' && c.type === type), list = gate.filter(match);
+    return `<h2>${type} Ramp (${gate.length})</h2>` + searchBox('Container / Batch search') +
+      (list.length ? list.map(c => card(c, true)).join('') : `<div class="empty">${gate.length ? 'Koi match nahi.' : 'Koi ' + type + ' container gate marked nahi hai.<br>Containers tab se "Gate Mark" karein.'}</div>`);
+  }
+  function vTransit(all) {
+    if (openBatch) {
+      const b = findB(openBatch); if (!b) { openBatch = null; return vTransit(all); }
+      const cc = all.filter(c => c.batch === openBatch), cnt = k => cc.filter(c => k === 'all' || c.st === k).length;
+      let list = cc.filter(match); if (filter !== 'all') list = list.filter(c => c.st === filter);
+      return `<button class="back" id="backB">&#8592; Batches</button><h2>${esc(b.batch)} &middot; ${esc(b.model)}</h2>` + searchBox('Container / vehicle search') +
+        `<div class="filters">${[['all', 'Sab'], ['transit', 'In Transit'], ['gate', 'In Factory'], ['off', 'Offloaded']].map(([k, l]) => `<button data-f="${k}" class="${filter === k ? 'on' : ''}">${l} (${cnt(k)})</button>`).join('')}</div>` +
+        (list.map(c => card(c, true)).join('') || '<div class="empty">Koi container nahi.</div>');
+    }
+    const tb = data.batches.filter(b => b.transit), cs = all.filter(c => tb.some(b => b.batch === c.batch));
+    const n = k => cs.filter(c => c.st === k).length;
+    return `<div class="stats"><div class="stat"><b>${n('transit')}</b><span>Raaste mein</span></div><div class="stat"><b>${n('gate')}</b><span>In Factory</span></div><div class="stat"><b>${n('off')}</b><span>Offloaded</span></div></div>` +
+      searchBox('Container search (sab transit batches)') + (q ? '' : '<h2>Transit (LHR) batches</h2>') +
+      (q ? cs.filter(match).slice(0, 60).map(c => card(c, true)).join('') || '<div class="empty">Koi match nahi.</div>'
+        : tb.map(b => { const cc = all.filter(c => c.batch === b.batch), t = cc.length || 1, a = cc.filter(c => c.st === 'off').length, g = cc.filter(c => c.st === 'gate').length, w = cc.filter(c => c.type === 'Welding').length;
+          return `<div class="card tap" data-ob="${esc(b.batch)}"><div class="row"><span class="cno">${esc(b.batch)}</span><span class="chip c-transit">${cc.length} containers</span></div>
+          <div class="sub">${esc(b.model)} &middot; ${esc(b.color || '')} &middot; ${b.units || 0} units</div>
+          <div class="bar"><i style="width:${a / t * 100}%;background:#16a34a"></i><i style="width:${g / t * 100}%;background:#f59e0b"></i></div>
+          <div class="sub">Offloaded <b>${a}</b> &middot; In Factory <b>${g}</b> &middot; Raaste mein <b>${cc.length - a - g}</b> &nbsp;|&nbsp; W ${w} / P ${cc.length - w}</div></div>`; }).join('') || '<div class="empty">Abhi koi batch transit mein nahi hai.</div>');
+  }
+  function vDone(all) {
+    const recs = all.filter(c => c.st === 'off' && c.off).filter(match);
+    recs.sort((a, b) => b.off.date.split('-').reverse().join('') .concat(b.off.time).localeCompare(a.off.date.split('-').reverse().join('').concat(a.off.time)));
+    const d = new Date(), today = `${p2(d.getDate())}-${p2(d.getMonth() + 1)}-${d.getFullYear()}`;
+    const offs = all.filter(c => c.st === 'off');
+    return `<div class="stats"><div class="stat"><b>${offs.filter(c => c.off && c.off.date === today).length}</b><span>Aaj offload</span></div><div class="stat"><b>${offs.length}</b><span>Total offload</span></div><div class="stat"><b>${offs.filter(c => c.off && c.off.condition === 'Damage').length}</b><span>Damage</span></div></div>` + searchBox('Container search') +
+      (recs.slice(0, 80).map(c => card(c, false) + '').join('') || '<div class="empty">Abhi tak koi offload record nahi.</div>');
+  }
+
+  // ---------- container detail (DNA) sheet ----------
+  let sheetC = null;
+  function openInfo(batch, cno, keepScroll) {
+    const c = ALL().find(x => x.batch === batch && x.containerNo === cno); if (!c) return;
+    sheetC = { b: batch, c: cno };
+    const kv = (l, v) => `<div class="kv"><small>${l}</small><b>${esc(v || '-')}</b></div>`;
+    const top = keepScroll ? $('#sheet').scrollTop : 0;
+    $('#sheet').innerHTML = `<div data-dna></div><div class="row"><h3>Container Details</h3><button class="iconbtn" style="background:#eef2f7;color:#0b2a55" id="fx">&#10005;</button></div>
+      <div class="cno" style="margin:4px 0 6px">${esc(c.containerNo)}</div>${stChip(c)}
+      <div class="grid2">${kv('Type', c.type)}${kv('Batch', c.batch)}${kv('Vehicle Model', c.model)}${kv('Seq', c.seq)}${kv('Seal No.', c.sealNo)}${kv('Color', c.color)}
+      ${kv('Gaari No.', c.vehicleNo)}<div class="kv"><small>Driver</small><b>${phone(c) || '-'}</b></div>${kv('Location', c.location)}${kv('Transporter', c.transporter)}
+      ${kv('BL', c.bl)}${kv('LC', c.lc)}${kv('Arrival Date', c.gateDate)}${kv('Arrival Time', c.gateTime)}</div>
+      ${c.st === 'off' && c.off ? `<div class="card" style="margin:0"><b>Offloaded</b><div class="sub">${esc(c.off.date)} ${esc(c.off.time)} &middot; ${esc(c.off.condition)}${c.off.by ? ' &middot; ' + esc(c.off.by) : ''}</div><div class="sub">Remarks: ${esc(c.off.remarks)}</div></div>` : actions(c)}`;
+    $('#sheetBg').classList.remove('hide'); $('#sheet').scrollTop = top;
+    $('#fx').onclick = closeSheet;
+  }
+  function closeSheet() { $('#sheetBg').classList.add('hide'); sheetC = null; form = null; }
+  $('#sheetBg').addEventListener('click', e => { if (e.target.id === 'sheetBg') closeSheet(); });
+
+  // ---------- offload form ----------
+  let form = null;
+  function openForm(batch, cno) {
+    const c = ALL().find(x => x.batch === batch && x.containerNo === cno); if (!c || c.st === 'off') return;
+    const now = new Date();
+    form = { batch, cno, cond: 'OK' }; sheetC = null;
+    const kv = (l, v) => `<div class="kv"><small>${l}</small><b>${esc(v || '-')}</b></div>`;
+    $('#sheet').innerHTML = `<div class="row"><h3>Offload Form</h3><button class="iconbtn" style="background:#eef2f7;color:#0b2a55" id="fx">&#10005;</button></div>
+      <div class="cno" style="margin-top:4px">${esc(c.containerNo)}</div>
+      <div class="grid2">${kv('Batch', c.batch)}${kv('Type', c.type)}${kv('Seq', c.seq)}${kv('Seal No.', c.sealNo)}${kv('Color', c.color)}${kv('BL / LC', c.bl + ' / ' + c.lc)}${kv('Gate par pohanchi', c.gateDate)}${kv('Gate time', c.gateTime)}</div>
+      <label>Offloading Date</label><input type="date" id="fdate" value="${now.getFullYear()}-${p2(now.getMonth() + 1)}-${p2(now.getDate())}">
+      <label>Offloading Time</label><input type="text" id="ftime" value="${esc(now.toLocaleTimeString())}">
+      <label>Condition</label><div class="seg"><button class="ok on" data-cd="OK">&#128077; OK</button><button class="dm" data-cd="Damage">&#9888; Damage</button></div>
+      <label>Remarks</label><textarea id="frem" rows="3" placeholder="Koi nuqsaan ya note (optional)"></textarea>
+      <div style="height:14px"></div><button class="btn" id="fgo">&#10003; Offloaded - Save</button>`;
+    $('#sheetBg').classList.remove('hide'); $('#fx').onclick = closeSheet;
+    $('#sheet').querySelectorAll('.seg button').forEach(b => b.onclick = () => { form.cond = b.dataset.cd; $('#sheet').querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b)); });
+    $('#fgo').onclick = submitForm;
+  }
+  async function submitForm() {
+    if (!form) return;
+    const payload = { batch: form.batch, containerNo: form.cno, offloadingDate: $('#fdate').value, offloadingTime: $('#ftime').value.trim(), condition: form.cond, remarks: $('#frem').value.trim(), worker: S.name };
+    if (form.cond === 'Damage' && !payload.remarks && !confirm('Damage hai lekin remarks khali hain. Bina remarks ke save karein?')) return;
+    $('#fgo').disabled = true;
+    const r = await send('offload', payload);
+    if (!r) { $('#fgo').disabled = false; return; }
+    const c = findC(payload.batch, payload.containerNo);
+    if (c) { if (r.record) applyOff(c, r.record); else { c.st = 'off'; c.off = { date: payload.offloadingDate.split('-').reverse().join('-'), time: payload.offloadingTime, condition: payload.condition, remarks: payload.remarks || '-', by: S.name }; } }
+    if (!r.queued) toast(r.duplicate ? payload.containerNo + ' pehle hi offload ho chuka hai' : payload.containerNo + ' offload save ho gaya', r.duplicate ? '' : 'ok');
+    closeSheet(); render();
+  }
+
+  // ---------- events ----------
+  document.addEventListener('click', e => {
+    const t = e.target;
+    const nb = t.closest('nav button'); if (nb) { tab = nb.dataset.tab; q = ''; openBatch = null; filter = 'all'; render(); return; }
+    const act = t.closest('[data-act]');
+    if (act) { e.stopPropagation(); const b = act.dataset.b, c = act.dataset.c, a = act.dataset.act;
+      if (a === 'offload') openForm(b, c); else if (a === 'mark') gateMark(b, c, true); else if (a === 'unmark') { if (confirm(c + ' ko gate se hata dein?')) gateMark(b, c, false); } return; }
+    const info = t.closest('[data-info]'); if (info) { const [b, c] = info.dataset.info.split('|'); openInfo(b, c); return; }
+    const ob = t.closest('[data-ob]'); if (ob) { openBatch = ob.dataset.ob; filter = 'all'; q = ''; render(); return; }
+    if (t.closest('#backB')) { openBatch = null; q = ''; filter = 'all'; render(); return; }
+    const f = t.closest('[data-f]'); if (f) { filter = f.dataset.f; render(); }
+  });
+  $('#refresh').onclick = () => { load(); flushQueue(); toast('Refresh ho gaya'); };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && S.pin) load(); });
+  setInterval(() => { if (S.pin && !document.hidden && queue.length) flushQueue(); }, 15000);
+  setInterval(() => { if (S.pin && !document.hidden && Date.now() - lastLoad > (sseOK ? 45000 : 8000)) load(); }, 4000);   // safety refresh (live stream may be blocked by some networks)
+
+  function start() { $('#login').classList.add('hide'); $('#app').classList.remove('hide'); showInstall(); render(); connect(); load(); }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (S.pin && S.name) start(); else { showLogin(); showInstall(); }
+})();
+</script>
+</body>
+</html>

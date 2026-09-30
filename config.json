@@ -1,0 +1,9 @@
+{
+  "port": 3000,
+  "workerPin": "806910",
+  "adminPassword": "x2AJI2z1",
+  "publicUrl": "",
+  "cloudflaredPath": "",
+  "tunnel": "auto",
+  "sshPath": ""
+}
